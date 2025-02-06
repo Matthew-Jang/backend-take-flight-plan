@@ -31,6 +31,7 @@ db.sequelize = sequelize;
 // Import Models
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.session = require("./session.model.js")(sequelize, Sequelize);
+db.event = require("./event.model.js")(sequelize, Sequelize); 
 
 // User Relationships
 db.user.hasMany(db.session, { as: "sessions", foreignKey: { allowNull: false }, onDelete: "CASCADE" });
