@@ -12,5 +12,5 @@ module.exports = (app) => {
   // Logout
   router.post("/logout", auth.logout);
 
-  app.use("/resume-t4/api", router);
+  app.use("/flight-plan-t4/api", router);
 };
