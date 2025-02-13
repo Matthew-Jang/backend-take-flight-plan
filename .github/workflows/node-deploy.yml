@@ -16,6 +16,7 @@ jobs:
       DB_USER: ${{ secrets.AWS_DB_USER }}
       DB_NAME: ${{ secrets.AWS_DB_NAME }}
       CLIENT_ID: ${{secrets.VUE_APP_CLIENT_ID}}
+      PORT: ${{ secrets.PORT }}
       
     # CLIENT_SECRET: {{secrets.CLIENT_SECRET}}
     steps:
@@ -32,6 +33,7 @@ jobs:
           echo DB_USER = "$DB_USER" >> .env
           echo DB_NAME = "$DB_NAME" >> .env
           echo CLIENT_ID = "$CLIENT_ID" >> .env
+          echo PORT = "$PORT" >> .env
           
         # echo CLIENT_SECRET = "$CLIENT_SECRET" >> .env
 
