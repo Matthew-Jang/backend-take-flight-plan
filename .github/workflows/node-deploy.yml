@@ -15,7 +15,7 @@ jobs:
       DB_PW: ${{ secrets.AWS_DB_PW}}
       DB_USER: ${{ secrets.AWS_DB_USER }}
       DB_NAME: ${{ secrets.AWS_DB_NAME }}
-      CLIENT_ID: ${{secrets.VUE_APP_CLIENT_ID}}
+      CLIENT_ID: ${{ secrets.VITE_APP_CLIENT_ID }}
       PORT: ${{ secrets.PORT }}
       
     # CLIENT_SECRET: {{secrets.CLIENT_SECRET}}
