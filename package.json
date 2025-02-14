@@ -1,7 +1,7 @@
 {
   "name": "flight-plan-t4-backend",
   "version": "1.0.0",
-  "description": "Resume-Builder Node.js with Rest API",
+  "description": "flight-plan Node.js with Rest API",
   "main": "server.js",
   "scripts": {
     "test": "jest --",
