@@ -11,11 +11,12 @@ const db = require("./app/models");
 db.sequelize.sync();
 
 var corsOptions = {
-  origin: "http://localhost:8081",
+  origin: ["http://localhost:8081", "http://flightplan.eaglesoftwareteam.com"],
+  credentials: true
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors());
+// app.options("*", cors());
 
 // parse requests of content-type - application/json
 app.use(express.json());
