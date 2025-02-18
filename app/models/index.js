@@ -31,8 +31,12 @@ db.sequelize = sequelize;
 // Import Models
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.session = require("./session.model.js")(sequelize, Sequelize);
+db.reward = require("./reward.model.js")(sequelize, Sequelize);
+db.studentReward = require("./student_rewards.model.js")(sequelize, Sequelize);
 
 // User Relationships
+db.user.hasMany(db.studentReward, { as: "rewards", foreignKey: "student_id" });
+db.reward.hasMany(db.studentReward, { as: "redemptions", foreignKey: "reward_id" });
 db.user.hasMany(db.session, { as: "sessions", foreignKey: { allowNull: false }, onDelete: "CASCADE" });
 db.session.belongsTo(db.user, { as: "user", foreignKey: { allowNull: false }, onDelete: "CASCADE" });
 
