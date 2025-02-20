@@ -11,11 +11,12 @@ const db = require("./app/models");
 db.sequelize.sync();
 
 var corsOptions = {
-  origin: "http://localhost:8081",
+  origin: ["http://localhost:8081", "http://flightplan.eaglesoftwareteam.com"],
+  credentials: true
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors());
+// app.options("*", cors());
 
 // parse requests of content-type - application/json
 app.use(express.json());
@@ -29,9 +30,12 @@ app.get("/", (req, res) => {
 });
 
 // Import and use all routes
-// require("./app/routes/auth.routes")(app);
-// require("./app/routes/user.routes")(app);
+require("./app/routes/auth.routes")(app);
+require("./app/routes/user.routes")(app);
+require("./app/routes/clifton_strengths.routes")(app);
+require("./app/routes/reward.routes")(app); 
 require("./app/routes/event.routes")(app);
+
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3100;
