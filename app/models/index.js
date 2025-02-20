@@ -32,9 +32,15 @@ db.sequelize = sequelize;
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.session = require("./session.model.js")(sequelize, Sequelize);
 db.cliftonStrength = require("./clifton_strengths.model.js")(sequelize, Sequelize);
+db.reward = require("./reward.model.js")(sequelize, Sequelize);
+db.studentReward = require("./student_rewards.model.js")(sequelize, Sequelize);
 
 // User Relationships
 db.user.hasMany(db.session, { as: "sessions", foreignKey: { allowNull: false }, onDelete: "CASCADE" });
 db.session.belongsTo(db.user, { as: "user", foreignKey: { allowNull: false }, onDelete: "CASCADE" });
+
+// Reward Relationships
+db.user.hasMany(db.studentReward, { as: "rewards", foreignKey: "student_id" });
+db.reward.hasMany(db.studentReward, { as: "redemptions", foreignKey: "reward_id" });
 
 module.exports = db;
