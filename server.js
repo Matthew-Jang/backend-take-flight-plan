@@ -34,6 +34,7 @@ require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/clifton_strengths.routes")(app);
 require("./app/routes/reward.routes")(app); 
+require("./app/routes/event.routes")(app);
 
 
 // set port, listen for requests

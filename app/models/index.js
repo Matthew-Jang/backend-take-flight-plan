@@ -31,6 +31,7 @@ db.sequelize = sequelize;
 // Import Models
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.session = require("./session.model.js")(sequelize, Sequelize);
+db.event = require("./event.model.js")(sequelize, Sequelize); 
 db.cliftonStrength = require("./clifton_strengths.model.js")(sequelize, Sequelize);
 db.reward = require("./reward.model.js")(sequelize, Sequelize);
 db.studentReward = require("./student_rewards.model.js")(sequelize, Sequelize);
