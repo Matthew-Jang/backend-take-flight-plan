@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
             ),
         },
         name: {
-            type: Sequelize.String
+            type: Sequelize.STRING
         },
         description: {
             type: Sequelize.TEXT

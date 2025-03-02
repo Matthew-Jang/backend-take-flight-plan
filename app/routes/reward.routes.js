@@ -1,3 +1,4 @@
+module.exports = (app) => {
 const express = require("express");
 const router = express.Router();
 const rewardController = require("../controllers/reward.controller");
@@ -9,4 +10,5 @@ router.get("/:id", rewardController.getRewardById);
 router.put("/:id", rewardController.updateReward);
 router.delete("/:id", rewardController.deleteReward);
 
-module.exports = router;
+app.use("/flight-plan-t4/rewards", router);
+};

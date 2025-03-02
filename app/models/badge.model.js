@@ -17,8 +17,8 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      points: { type: DataTypes.INTEGER },
-      exp: { type: DataTypes.INTEGER },
+      points: { type: Sequelize.INTEGER },
+      exp: { type: Sequelize.INTEGER },
       // refresh_token: {
       //   type: Sequelize.STRING(512),
       //   allowNull: true
