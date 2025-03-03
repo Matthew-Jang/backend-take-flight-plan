@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const CliftonStrength = sequelize.define("CliftonStrength", {
+    const Clifton_Strength = sequelize.define("clifton_strength", {
       clifton_strengths_id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -11,6 +11,6 @@ module.exports = (sequelize, DataTypes) => {
       },
     });
   
-    return CliftonStrength;
+    return Clifton_Strength;
   };
   

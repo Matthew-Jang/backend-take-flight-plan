@@ -1,3 +1,4 @@
+module.exports = (app) => {
 const express = require("express");
 const router = express.Router();
 const cliftonStrengthController = require("../controllers/clifton_strengths.controller");
@@ -9,4 +10,5 @@ router.get("/:id", cliftonStrengthController.getStrengthById);
 router.put("/:id", cliftonStrengthController.updateStrength);
 router.delete("/:id", cliftonStrengthController.deleteStrength);
 
-module.exports = router;
+app.use("/flight-plan-t4/clifton_strengths", router);
+};

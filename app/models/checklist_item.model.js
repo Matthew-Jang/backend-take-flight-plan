@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Checklist_Item = sequelize.define("checklist_items", {
+    const Checklist_Item = sequelize.define("checklist_item", {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
             ),
         },
         name: {
-            type: Sequelize.String
+            type: Sequelize.STRING
         },
         description: {
             type: Sequelize.TEXT

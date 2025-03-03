@@ -28,20 +28,110 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Import Models
+/*** Models ***/
+// Auth 
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.session = require("./session.model.js")(sequelize, Sequelize);
+
+// Core user things
+db.student = require("./student.model")(sequelize, Sequelize);
+db.badge = require("./badge.model")(sequelize, Sequelize);
+db.major = require("./major.model")(sequelize, Sequelize);
+db.clifton_strength = require("./clifton_strengths.model.js")(sequelize, Sequelize);
+
+// Tasks, Experiences, Points, Rewards
+db.checklist_item = require("./checklist_item.model")(sequelize, Sequelize);
 db.event = require("./event.model.js")(sequelize, Sequelize); 
-db.cliftonStrength = require("./clifton_strengths.model.js")(sequelize, Sequelize);
 db.reward = require("./reward.model.js")(sequelize, Sequelize);
-db.studentReward = require("./student_rewards.model.js")(sequelize, Sequelize);
+db.student_reward = require("./student_rewards.model.js")(sequelize, Sequelize);
 
-// User Relationships
-db.user.hasMany(db.session, { as: "sessions", foreignKey: { allowNull: false }, onDelete: "CASCADE" });
-db.session.belongsTo(db.user, { as: "user", foreignKey: { allowNull: false }, onDelete: "CASCADE" });
+/*** Relationships ***/
+// User - Session
+db.user.hasMany(db.session, { as: "sessions", foreignKey: { allowNull: false, onDelete: "CASCADE" } });
+db.session.belongsTo(db.user, { as: "user", foreignKey: { allowNull: false, onDelete: "CASCADE" } });
 
-// Reward Relationships
-db.user.hasMany(db.studentReward, { as: "rewards", foreignKey: "student_id" });
-db.reward.hasMany(db.studentReward, { as: "redemptions", foreignKey: "reward_id" });
+// User <-> Student
+db.user.hasOne(db.student, { 
+  foreignKey: { name: "user_id", allowNull: false, onDelete: "CASCADE" } 
+});
+db.student.belongsTo(db.user, { 
+  foreignKey: { name: "user_id", allowNull: false, onDelete: "CASCADE" } 
+});
+
+// Student <-> Major
+db.major.hasMany(db.student, { foreignKey: "major_id" });
+db.student.belongsTo(db.major, { foreignKey: "major_id" });
+
+// Student <-> Badge
+db.student.belongsToMany(db.badge, {
+  through: "student_badges",
+  foreignKey: { name: "student_id", onDelete: "CASCADE" },
+  otherKey: { name: "badge_id", onDelete: "CASCADE" },
+});
+db.badge.belongsToMany(db.student, {
+  through: "student_badges",
+  foreignKey: { name: "badge_id", onDelete: "CASCADE" },
+  otherKey: { name: "student_id", onDelete: "CASCADE" },
+});
+
+// Student <-> Clifton_Strength
+db.student.belongsToMany(db.clifton_strength, {
+  through: "student_clifton_strengths",
+  foreignKey: { name: "student_id", onDelete: "CASCADE" },
+  otherKey: { name: "clifton_strengths_id", onDelete: "CASCADE" },
+});
+db.clifton_strength.belongsToMany(db.student, {
+  through: "student_clifton_strengths",
+  foreignKey: { name: "clifton_strengths_id", onDelete: "CASCADE" },
+  otherKey: { name: "student_id", onDelete: "CASCADE" },
+});
+
+// Student <-> Reward
+db.student.belongsToMany(db.reward, {
+  through: db.student_reward,
+  foreignKey: { name: "student_id", onDelete: "CASCADE" },
+  otherKey: { name: "reward_id", onDelete: "CASCADE" },
+});
+db.reward.belongsToMany(db.student, {
+  through: db.student_reward,
+  foreignKey: { name: "reward_id", onDelete: "CASCADE" },
+  otherKey: { name: "student_id", onDelete: "CASCADE" },
+});
+
+// Student <-> Event
+db.student.belongsToMany(db.event, {
+  through: "student_events",
+  foreignKey: { name: "student_id", onDelete: "CASCADE" },
+  otherKey: { name: "event_id", onDelete: "CASCADE" },
+});
+db.event.belongsToMany(db.student, {
+  through: "student_events",
+  foreignKey: { name: "event_id", onDelete: "CASCADE" },
+  otherKey: { name: "student_id", onDelete: "CASCADE" },
+});
+
+// Student <-> Checklist_Item
+db.student.belongsToMany(db.checklist_item, {
+  through: "student_checklist_items",
+  foreignKey: { name: "student_id", onDelete: "CASCADE" },
+  otherKey: { name: "checklist_item_id", onDelete: "CASCADE" },
+});
+db.checklist_item.belongsToMany(db.student, {
+  through: "student_checklist_items",
+  foreignKey: { name: "checklist_item_id", onDelete: "CASCADE" },
+  otherKey: { name: "student_id", onDelete: "CASCADE" },
+});
+
+// Checklist_Item <-> Event
+db.checklist_item.belongsToMany(db.event, {
+  through: "checklist_item_events",
+  foreignKey: { name: "checklist_item_id", onDelete: "CASCADE" },
+  otherKey: { name: "event_id", onDelete: "CASCADE" },
+});
+db.event.belongsToMany(db.checklist_item, {
+  through: "checklist_item_events",
+  foreignKey: { name: "event_id", onDelete: "CASCADE" },
+  otherKey: { name: "checklist_item_id", onDelete: "CASCADE" },
+});
 
 module.exports = db;
