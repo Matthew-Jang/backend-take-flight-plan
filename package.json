@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest --",
     "start": "node server.js",
-    "bundle": "mkdir deploy && cp -r app server.js package.json package-lock.json flight-plan-t4-backend.service .env deploy"
+    "bundle": "mkdir deploy && cp -r app server.js package.json package-lock.json flight-plan-t4-backend.service .env deploy",
+    "dev": "nodemon server.js"
   },
   "keywords": [
     "node.js",
@@ -24,6 +25,7 @@
     "jest": "^29.3.1",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.3",
+    "nodemon": "^3.1.9",
     "parser": "^0.1.4",
     "sequelize": "^6.19.0",
     "supertest": "^6.3.3"

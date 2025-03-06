@@ -4,6 +4,7 @@ const Event = db.Event;
 // Create a new event
 exports.createEvent = async (req, res) => {
   try {
+    console.log()
     const event = await Event.create(req.body);
     res.status(201).json(event);
   } catch (error) {

@@ -1,5 +1,5 @@
 const db = require("../models")
-const Checklist_Item = db.Checklist_Item
+const Checklist_Item = db.checklist_item
 const Op = db.Sequelize.Op
 
 // Create and Save a new checklist item
@@ -7,20 +7,20 @@ exports.create = (req, res) => {
     console.log("add checklist item controller")
 
     //validate request
-    if (!req.body.item_type || !req.body.name || !req.body.points) {
-        res.status(400).send({
-            message: "Content can not be empty!",
-        });
-        return;
-    }
+    // if (!req.body.item_type || !req.body.name || !req.body.points) {
+    //     res.status(400).send({
+    //         message: "Content can not be empty!",
+    //     });
+    //     return;
+    // }
 
     // Create a Checklist Item from data
     const checklist_item = {
-        item_type: req.params.item_type,
-        name: req.params.name,
-        description: req.params.description,
-        points: req.params.points,
-        semesters_til_graduation: req.params.semesters_til_graduation
+        item_type: req.body.item_type,
+        name: req.body.name,
+        description: req.body.description,
+        points: req.body.points,
+        semesters_til_graduation: req.body.semesters_til_graduation
     };
 
     Checklist_Item.create(checklist_item)
@@ -91,7 +91,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     const id = req.params.id
 
-    Checklist_Item.destory({
+    Checklist_Item.destroy({
         where : { id: id}
     })
         .then((num) => {
