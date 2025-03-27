@@ -1,5 +1,5 @@
 const db = require("../models")
-const Checklist_Item = db.Checklist_Item
+const Checklist_Item = db.checklist_item
 const Op = db.Sequelize.Op
 
 // Create and Save a new checklist item
@@ -20,7 +20,7 @@ exports.create = (req, res) => {
         name: req.params.name,
         description: req.params.description,
         points: req.params.points,
-        semesters_til_graduation: req.params.semesters_til_graduation
+        semester_number: req.params.semester_number
     };
 
     Checklist_Item.create(checklist_item)
