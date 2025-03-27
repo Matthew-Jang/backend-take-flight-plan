@@ -33,6 +33,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       }
+    },{
+      timestamps: false,
     });
   
     return Event;

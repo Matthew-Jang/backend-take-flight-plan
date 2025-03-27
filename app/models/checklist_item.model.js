@@ -23,6 +23,8 @@ module.exports = (sequelize, Sequelize) => {
         semesters_til_graduation: {
             type: Sequelize.INTEGER
         }
-    });
+    },{
+        timestamps: false,
+      });
     return Checklist_Item;
 };

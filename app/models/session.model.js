@@ -17,6 +17,8 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATE,
         allowNull: false,
       },
+    },{
+      timestamps: false,
     });
   
     return Session;
