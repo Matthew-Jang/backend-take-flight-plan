@@ -22,7 +22,7 @@ module.exports = (app) => {
   router.delete("/", [authenticate], user.deleteAll);
 
   // Update user points
-  router.patch("/:id/points", userController.modifyPoints);
+  router.patch("/:id/points", user.modifyPoints);
 
   app.use("/flight-plan-t4/users", router);
 };

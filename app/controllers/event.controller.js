@@ -1,5 +1,5 @@
 const db = require("../models");
-const Event = db.Event;
+const Event = db.event;
 
 // Create a new event
 exports.createEvent = async (req, res) => {
