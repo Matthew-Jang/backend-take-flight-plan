@@ -21,5 +21,8 @@ module.exports = (app) => {
   // Delete all User
   router.delete("/", [authenticate], user.deleteAll);
 
+  // Update user points
+  router.patch("/:id/points", user.modifyPoints);
+
   app.use("/flight-plan-t4/users", router);
 };

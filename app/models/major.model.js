@@ -13,9 +13,9 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: true,
       },
-    }, {
-      timestamps: false
-  });
+    },{
+      timestamps: false,
+    });
   
     return Major;
   };

@@ -163,3 +163,46 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+
+// Modify users Points
+exports.modifyPoints = async (req, res) => {
+  const { amount, action } = req.body;
+  const userId = req.params.id;
+
+  if (typeof amount !== "number" || !["add", "subtract"].includes(action)) {
+    return res.status(400).send({
+      message: "Invalid request. Must include 'amount' (number) and 'action' (add/subtract).",
+    });
+  }
+
+  try {
+    const student = await Student.findOne({ where: { user_id: userId } });
+
+    if (!student) {
+      return res.status(404).send({ message: `Student not found for user_id=${userId}` });
+    }
+
+    if (action === "add") {
+      student.points_awarded += amount;
+    } else if (action === "subtract") {
+      student.points_used += amount;
+    }
+
+    await student.save();
+
+    res.send({
+      message: `Points ${action}ed successfully.`,
+      student: {
+        id: student.id,
+        user_id: student.user_id,
+        points_awarded: student.points_awarded,
+        points_used: student.points_used,
+      },
+    });
+  } catch (error) {
+    res.status(500).send({
+      message: "Error modifying student points.",
+      error: error.message,
+    });
+  }
+};
