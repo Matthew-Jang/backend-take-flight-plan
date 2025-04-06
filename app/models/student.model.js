@@ -11,7 +11,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       major_id: {
         type: Sequelize.INTEGER,
-        defaultValue: 1,
+        allowNull: true,
       },
       points_awarded: {
         type: Sequelize.INTEGER,
