@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 
-// Close user info
+// User info
 require("./app/routes/student.routes")(app);
 require("./app/routes/badge.routes")(app);
 require("./app/routes/major.routes")(app);
@@ -42,6 +42,7 @@ require("./app/routes/clifton_strengths.routes")(app);
 
 // Tasks, Experiences, Points, Rewards
 require("./app/routes/checklist_item.routes")(app);
+require("./app/routes/student_checklist_item.routes")(app);
 require("./app/routes/event.routes")(app);
 require("./app/routes/reward.routes")(app); 
 

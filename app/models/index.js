@@ -41,6 +41,7 @@ db.clifton_strength = require("./clifton_strengths.model.js")(sequelize, Sequeli
 
 // Tasks, Experiences, Points, Rewards
 db.checklist_item = require("./checklist_item.model")(sequelize, Sequelize);
+db.student_checklist_item = require("./student_checklist_item.model.js")(sequelize, Sequelize);
 db.event = require("./event.model.js")(sequelize, Sequelize); 
 db.reward = require("./reward.model.js")(sequelize, Sequelize);
 db.student_reward = require("./student_rewards.model.js")(sequelize, Sequelize);
