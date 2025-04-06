@@ -1,5 +1,5 @@
 const { authenticate } = require("../authorization/authorization.js");
-const controller = require("../controllers/student_checklist_item.controller.js");
+const controller = require("../controllers/student_flight_plan_item.controller.js");
 
 module.exports = (app) => {
   const router = require("express").Router();
@@ -23,5 +23,5 @@ module.exports = (app) => {
   router.delete("/", [authenticate], controller.deleteAll);
 
   // Mount at /flight-plan-t4/student_checklist_items
-  app.use("/flight-plan-t4/student_checklist_items", router);
+  app.use("/flight-plan-t4/student_flight_plan_items", router);
 };

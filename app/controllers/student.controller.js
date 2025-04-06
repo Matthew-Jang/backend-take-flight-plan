@@ -1,5 +1,5 @@
 const db = require("../models");
-const Student = db.Student;
+const Student = db.student;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Student

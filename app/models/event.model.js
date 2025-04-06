@@ -32,9 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     location: {
       type: DataTypes.STRING,
       allowNull: true,
-    }, {
-      timestamps: false,
-    }
+    },
   });
 
   return Event;

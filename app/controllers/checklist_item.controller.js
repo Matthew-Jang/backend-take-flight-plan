@@ -91,7 +91,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     const id = req.params.id
 
-    Checklist_Item.destory({
+    Checklist_Item.destroy({
         where : { id: id}
     })
         .then((num) => {

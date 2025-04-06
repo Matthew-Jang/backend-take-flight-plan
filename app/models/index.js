@@ -41,7 +41,8 @@ db.clifton_strength = require("./clifton_strengths.model.js")(sequelize, Sequeli
 
 // Tasks, Experiences, Points, Rewards
 db.checklist_item = require("./checklist_item.model")(sequelize, Sequelize);
-db.student_checklist_item = require("./student_checklist_item.model.js")(sequelize, Sequelize);
+db.flight_plan_item = require("./flight_plan_item.model")(sequelize, Sequelize);
+db.student_flight_plan_item = require("./student_flight_plan_item.model.js")(sequelize, Sequelize);
 db.event = require("./event.model.js")(sequelize, Sequelize); 
 db.reward = require("./reward.model.js")(sequelize, Sequelize);
 db.student_reward = require("./student_rewards.model.js")(sequelize, Sequelize);
@@ -111,16 +112,14 @@ db.event.belongsToMany(db.student, {
   otherKey: { name: "student_id", onDelete: "CASCADE" },
 });
 
-// Student <-> Checklist_Item
-db.student.belongsToMany(db.checklist_item, {
-  through: "student_checklist_items",
-  foreignKey: { name: "student_id", onDelete: "CASCADE" },
-  otherKey: { name: "checklist_item_id", onDelete: "CASCADE" },
+// Student <-> student_flight_plan_item
+db.student.hasMany(db.student_flight_plan_item, {
+  foreignKey: { name: "student_id", allowNull: false, onDelete: "CASCADE" },
+  as: "flightPlanItems",
 });
-db.checklist_item.belongsToMany(db.student, {
-  through: "student_checklist_items",
-  foreignKey: { name: "checklist_item_id", onDelete: "CASCADE" },
-  otherKey: { name: "student_id", onDelete: "CASCADE" },
+db.student_flight_plan_item.belongsTo(db.student, {
+  foreignKey: { name: "student_id", allowNull: false, onDelete: "CASCADE" },
+  as: "student",
 });
 
 // Checklist_Item <-> Event
@@ -133,6 +132,11 @@ db.event.belongsToMany(db.checklist_item, {
   through: "checklist_item_events",
   foreignKey: { name: "event_id", onDelete: "CASCADE" },
   otherKey: { name: "checklist_item_id", onDelete: "CASCADE" },
+});
+
+// Checklist_Item <-> Flight_Plan_Item
+db.checklist_item.hasMany(db.flight_plan_item, {
+  foreignKey: { name: "checklist_item_id", allowNull: false, onDelete: "CASCADE" },
 });
 
 module.exports = db;

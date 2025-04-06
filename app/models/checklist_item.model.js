@@ -20,9 +20,6 @@ module.exports = (sequelize, Sequelize) => {
         points: {
             type: Sequelize.INTEGER
         },
-        semester_number: {
-            type: Sequelize.INTEGER
-        }
     },{
         timestamps: false,
       });
