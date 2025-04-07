@@ -21,9 +21,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-    },{
-      timestamps: false,
-    });
+    }, {
+      timestamps: false
+  });
   
     return Student_Reward;
   };

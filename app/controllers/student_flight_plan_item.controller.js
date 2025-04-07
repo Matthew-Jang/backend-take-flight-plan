@@ -1,8 +1,8 @@
 const db = require("../models");
-const Student_Checklist_Item = db.student_checklist_item;
+const Student_Flight_Plan_Item = db.student_flight_plan_item;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new Student_Checklist_Item
+// Create and Save a new Student_Flight_Plan_Item
 exports.create = (req, res) => {
   // Build object
   const new_item = {
@@ -18,14 +18,14 @@ exports.create = (req, res) => {
     );
 };
 
-// Retrieve all Student_Checklist_Items (optionally filtered by student_id)
+// Retrieve all Student_Flight_Plan_Item (optionally filtered by student_id)
 exports.findAll = (req, res) => {
   const student_id = req.query.student_id;
   const condition = student_id
     ? { student_id: { [Op.eq]: student_id } }
     : null;
 
-  Student_Checklist_Item.findAll({ where: condition })
+    Student_Flight_Plan_Item.findAll({ where: condition })
     .then((data) => res.send(data))
     .catch((err) =>
       res.status(500).send({ message: err.message || "Error retrieving records" })
@@ -36,7 +36,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Student_Checklist_Item.findByPk(id)
+  Student_Flight_Plan_Item.findByPk(id)
     .then((data) => {
       if (data) {
         res.send(data);
@@ -51,11 +51,11 @@ exports.findOne = (req, res) => {
     );
 };
 
-// Update a Student_Checklist_Item by id
+// Update a Student_Flight_Plan_Item by id
 exports.update = (req, res) => {
   const id = req.params.id;
 
-  Student_Checklist_Item.update(req.body, { where: { id: id } })
+  Student_Flight_Plan_Item.update(req.body, { where: { id: id } })
     .then((num) => {
       if (num == 1) {
         res.send({ message: "Record updated successfully." });
@@ -74,7 +74,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Student_Checklist_Item.destroy({ where: { id: id } })
+  Student_Flight_Plan_Item.destroy({ where: { id: id } })
     .then((num) => {
       if (num == 1) {
         res.send({ message: "Record deleted successfully!" });
@@ -91,7 +91,7 @@ exports.delete = (req, res) => {
 
 // Delete all Student_Checklist_Items
 exports.deleteAll = (req, res) => {
-  Student_Checklist_Item.destroy({ where: {}, truncate: false })
+  Student_Flight_Plan_Item.destroy({ where: {}, truncate: false })
     .then((nums) =>
       res.send({ message: `${nums} record(s) deleted successfully!` })
     )

@@ -42,7 +42,8 @@ require("./app/routes/clifton_strengths.routes")(app);
 
 // Tasks, Experiences, Points, Rewards
 require("./app/routes/checklist_item.routes")(app);
-require("./app/routes/student_checklist_item.routes")(app);
+require("./app/routes/flight_plan_item.routes")(app);
+require("./app/routes/student_flight_plan_item.routes")(app);
 require("./app/routes/event.routes")(app);
 require("./app/routes/reward.routes")(app); 
 
