@@ -1,6 +1,4 @@
 //badge controller
-
-
 const db = require("../models");
 const Badge = db.badge;
 const Op = db.Sequelize.Op;
@@ -8,39 +6,22 @@ const Op = db.Sequelize.Op;
 // Create and Save a new badge
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.title) {
-    res.status(400).send({
-      message: "Content can not be empty!",
-    });
-    return;
-  }
+  // if (!req.body.title) {
+  //   res.status(400).send({
+  //     message: "Content can not be empty!",
+  //   });
+  //   return;
+  // }
 
   // Create a badge
   const badge = {
 
-    id: req.body.id,
+    // id: req.body.id,
     title: req.body.title,
-    type: req.body.type,
+    // type: req.body.type,
     description: req.body.description,
-    // id: {
-    //     type: Sequelize.INTEGER,
-    //     autoIncrement: true,
-    //     primaryKey: true,
-    //   },
-    //   type: {
-    //     type: Sequelize.INTEGER,
-    //     allowNull: false,
-    //   },    
-    //   title: {
-    //     type: Sequelize.STRING,
-    //     allowNull: false,
-    //   },
-    //   description: {
-    //     type: Sequelize.STRING,
-    //     allowNull: false,
-    //   },
-    //   points: { type: DataTypes.INTEGER },
-    //   exp: { type: DataTypes.INTEGER },
+    points: req.body.points,
+    exp: req.body.exp
     // refresh_token: req.body.refresh_token,
     // expiration_date: req.body.expiration_date
   };
@@ -62,7 +43,7 @@ exports.findAll = (req, res) => {
   const id = req.query.id;
   var condition = id ? { id: { [Op.like]: `%${id}%` } } : null;
 
-  User.findAll({ where: condition })
+  Badge.findAll({ where: condition })
     .then((data) => {
       res.send(data);
     })
@@ -77,19 +58,19 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  User.findByPk(id)
+  Badge.findByPk(id)
     .then((data) => {
       if (data) {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `Cannot find User with id=${id}.`,
+          message: `Cannot find Badge with id=${id}.`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error retrieving User with id=" + id,
+        message: "Error retrieving Badge with id=" + id,
       });
     });
 };
@@ -139,7 +120,7 @@ exports.delete = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Could not delete User with id=" + id,
+        message: "Could not delete Badge with id=" + id,
       });
     });
 };
