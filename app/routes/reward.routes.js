@@ -1,14 +1,22 @@
 module.exports = (app) => {
-const express = require("express");
-const router = express.Router();
-const rewardController = require("../controllers/reward.controller");
+  const rewardController = require("../controllers/reward.controller");
+  const { authenticate } = require("../authorization/authorization.js");
+  var router = require("express").Router();
 
-// Routes for rewards
-router.post("/", rewardController.createReward);
-router.get("/", rewardController.getAllRewards);
-router.get("/:id", rewardController.getRewardById);
-router.put("/:id", rewardController.updateReward);
-router.delete("/:id", rewardController.deleteReward);
+  // Create a new Reward
+  router.post("/", [authenticate], rewardController.createReward);
 
-app.use("/flight-plan-t4/rewards", router);
+  // Retrieve a single Reward
+  router.get("/:id", [authenticate], rewardController.getRewardById);
+
+  // Retrieve all Rewards
+  router.get("/", [authenticate], rewardController.getAllRewards);
+
+  // Update one Reward
+  router.put("/:id", [authenticate], rewardController.updateReward);
+
+  // Delete one Reward
+  router.delete("/:id", [authenticate], rewardController.deleteReward);
+
+  app.use("/flight-plan-t4/rewards", router);
 };
