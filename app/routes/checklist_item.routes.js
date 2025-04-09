@@ -1,5 +1,3 @@
-const auth = require("../authorization/authorization.js");
-
 module.exports = (app) => {
     const checklist_items = require("../controllers/checklist_item.controller.js");
     const { authenticate } = require("../authorization/authorization.js");
