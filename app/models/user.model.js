@@ -17,6 +17,14 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      isAdmin: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      points: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      }
       // refresh_token: {
       //   type: Sequelize.STRING(512),
       //   allowNull: true
