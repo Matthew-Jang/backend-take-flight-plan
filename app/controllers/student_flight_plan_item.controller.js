@@ -1,30 +1,37 @@
-// app/controllers/student_flight_plan_item.controller.js
+// -------- controllers/student_flight_plan_item.controller.js --------
+const db        = require("../models");
+const SFP       = db.student_flight_plan_item;
+const FPI       = db.flight_plan_item;
+const Checklist = db.checklist_item;
 
-const db       = require("../models");
-const SFP      = db.student_flight_plan_item;  // our model :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
-const FPI      = db.flight_plan_item;          // for cloning items :contentReference[oaicite:4]{index=4}&#8203;:contentReference[oaicite:5]{index=5}
-const Checklist= db.checklist_item;
-const Op       = db.Sequelize.Op;
-
-// 1) Generate a plan by copying every Flight_Plan_Item
+// 1) Generate a plan by copying every Flight_Plan_Item into the student table (denormalised snapshot)
 exports.generate = async (req, res) => {
-  const student_id = req.body.student_id;
+  const { student_id } = req.body;
   if (!student_id) return res.status(400).send({ message: "Missing student_id" });
 
-  const exist = await SFP.findAll({ where: { student_id } });
-  if (exist.length) {
-    return res.status(400).send({ message: "Plan already generated" });
-  }
+  // prevent duplicates
+  const exist = await SFP.count({ where: { student_id } });
+  if (exist) return res.status(400).send({ message: "Plan already generated" });
 
-  const planItems = await FPI.findAll();
+  // pull each flight‑plan item with its checklist so we can copy details
+  const planItems = await FPI.findAll({ include: [{ model: Checklist, as: "checklist" }] });
+
   const rows = planItems.map(pi => ({
     student_id,
-    checklist_item_id: pi.checklist_item_id,
-    semester_number:   pi.semester_number,
-    state:             "Pending",
+    flight_plan_item_id: pi.id,
+    checklist_item_id:   pi.checklist_item_id,
+
+    // snapshot
+    name:         pi.checklist.name,
+    description:  pi.checklist.description,
+    points:       pi.checklist.points,
+    item_type:    pi.checklist.item_type,
+
+    semester_number: pi.semester_number,
+    state:           "Pending"
   }));
 
-  const created = await SFP.bulkCreate(rows);
+  const created = await SFP.bulkCreate(rows, { returning: true });
   return res.status(201).send(created);
 };
 
@@ -40,10 +47,10 @@ exports.findAll = async (req, res) => {
   }
 
   const include = [];
-  if (includeChecklist === "true") include.push({ model: Checklist });
-  if (includeStudent    === "true") include.push({ model: db.student, as: "student" });
+  if (includeChecklist === "true") include.push({ model: Checklist, as: "checklist" });
+  if (includeStudent   === "true") include.push({ model: db.student, as: "student" });
 
-  const items = await SFP.findAll({ where, include });
+  const items = await SFP.findAll({ where, include, order: [["semester_number", "ASC"]] });
   return res.send(items);
 };
 
@@ -89,7 +96,7 @@ exports.delete = (req, res) => {
     .catch(err => res.status(500).send({ message: err.message }));
 };
 
-// 7) Delete all
+// 7) Delete all 
 exports.deleteAll = (req, res) => {
   SFP.destroy({ where: {}, truncate: false })
     .then(nums => res.send({ message: `${nums} record(s) deleted` }))
