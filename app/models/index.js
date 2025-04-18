@@ -1,4 +1,3 @@
-// -------- models/index.js --------
 const dbConfig = require("../config/db.config.js");
 const Sequelize = require("sequelize");
 
@@ -22,7 +21,7 @@ sequelize
   })
   .catch((err) => {
     console.error("Unable to connect to the database:", err);
-});
+  });
 
 // Initialize DB Object
 const db = {};
