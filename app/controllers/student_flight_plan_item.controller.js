@@ -28,7 +28,7 @@ exports.generate = async (req, res) => {
     item_type:    pi.checklist.item_type,
 
     semester_number: pi.semester_number,
-    state:           "Pending"
+    state:           "Not Started"
   }));
 
   const created = await SFP.bulkCreate(rows, { returning: true });

@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
     item_type:   { type: Sequelize.STRING },
 
     semester_number: { type: Sequelize.INTEGER },
-    state:           { type: Sequelize.ENUM("Pending", "Completed"), defaultValue: "Pending" },
+    state:           { type: Sequelize.ENUM("Not-Started", "Pending", "Completed"), defaultValue: "Not Started" },
     admin_approval:  { type: Sequelize.INTEGER },
     file_path:       { type: Sequelize.STRING }
   }, {
