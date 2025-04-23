@@ -128,3 +128,19 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+
+
+exports.findByUser = (req, res) => {
+  // req.userId comes from authenticate()
+  const user_id = req.query.user_id;
+  Student.findOne({ where: { user_id: user_id } })
+    .then(student => {
+      if (student) {
+        return res.send(student);
+      }
+      return res.status(404).send({ message: "No student profile for this user." });
+    })
+    .catch(err => {
+      return res.status(500).send({ message: err.message });
+    });
+};

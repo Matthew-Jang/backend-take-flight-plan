@@ -112,31 +112,24 @@ db.event.belongsToMany(db.student, {
   otherKey: { name: "student_id", onDelete: "CASCADE" },
 });
 
-// Student <-> student_flight_plan_item
-db.student.hasMany(db.student_flight_plan_item, {
-  foreignKey: { name: "student_id", allowNull: false, onDelete: "CASCADE" },
-  as: "flightPlanItems",
-});
-db.student_flight_plan_item.belongsTo(db.student, {
-  foreignKey: { name: "student_id", allowNull: false, onDelete: "CASCADE" },
-  as: "student",
-});
+// checklist_item ↔ flight_plan_item (1:N)
+db.checklist_item.hasMany(db.flight_plan_item, { foreignKey: { name: "checklist_item_id", allowNull: false, onDelete: "CASCADE" } });
+db.flight_plan_item.belongsTo(db.checklist_item, { foreignKey: "checklist_item_id", as: "checklist" });
 
-// Checklist_Item <-> Event
-db.checklist_item.belongsToMany(db.event, {
-  through: "checklist_item_events",
-  foreignKey: { name: "checklist_item_id", onDelete: "CASCADE" },
-  otherKey: { name: "event_id", onDelete: "CASCADE" },
-});
-db.event.belongsToMany(db.checklist_item, {
-  through: "checklist_item_events",
-  foreignKey: { name: "event_id", onDelete: "CASCADE" },
-  otherKey: { name: "checklist_item_id", onDelete: "CASCADE" },
-});
+// checklist_item ↔ event (M:N)
+db.checklist_item.belongsToMany(db.event, { through: "checklist_item_events", foreignKey: "checklist_item_id", otherKey: "event_id" });
+db.event.belongsToMany(db.checklist_item, { through: "checklist_item_events", foreignKey: "event_id", otherKey: "checklist_item_id" });
 
-// Checklist_Item <-> Flight_Plan_Item
-db.checklist_item.hasMany(db.flight_plan_item, {
-  foreignKey: { name: "checklist_item_id", allowNull: false, onDelete: "CASCADE" },
-});
+// student ↔ student_flight_plan_item (1:N)
+db.student.hasMany(db.student_flight_plan_item, { foreignKey: { name: "student_id", allowNull: false, onDelete: "CASCADE" }, as: "flightPlanItems" });
+db.student_flight_plan_item.belongsTo(db.student, { foreignKey: "student_id", as: "student" });
+
+// flight_plan_item ↔ student_flight_plan_item (1:N)
+db.flight_plan_item.hasMany(db.student_flight_plan_item, { foreignKey: { name: "flight_plan_item_id", allowNull: false, onDelete: "CASCADE" }, as: "assignments" });
+db.student_flight_plan_item.belongsTo(db.flight_plan_item, { foreignKey: "flight_plan_item_id", as: "flightPlanItem" });
+
+// checklist_item ↔ student_flight_plan_item (1:N)  (optional but lets you still JOIN for refs)
+db.checklist_item.hasMany(db.student_flight_plan_item, { foreignKey: { name: "checklist_item_id", onDelete: "CASCADE" } });
+db.student_flight_plan_item.belongsTo(db.checklist_item, { foreignKey: "checklist_item_id", as: "checklist" });
 
 module.exports = db;

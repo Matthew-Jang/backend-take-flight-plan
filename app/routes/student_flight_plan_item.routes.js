@@ -1,27 +1,27 @@
-const { authenticate } = require("../authorization/authorization.js");
-const controller = require("../controllers/student_flight_plan_item.controller.js");
+// app/routes/student_flight_plan_item.routes.js
 
-module.exports = (app) => {
+const { authenticate } = require("../authorization/authorization.js");
+const ctrl            = require("../controllers/student_flight_plan_item.controller.js");
+const multer          = require("multer");
+const upload          = multer({ dest: "uploads/" });
+
+module.exports = app => {
   const router = require("express").Router();
 
-  // Create a new student-checklist link
-  router.post("/", [authenticate], controller.create);
-
-  // Retrieve all (optionally filter by ?student_id=)
-  router.get("/", [authenticate], controller.findAll);
-
-  // Retrieve one by id
-  router.get("/:id", [authenticate], controller.findOne);
-
-  // Update one by id
-  router.put("/:id", [authenticate], controller.update);
-
-  // Delete one by id
-  router.delete("/:id", [authenticate], controller.delete);
-
+  // Student generates their full plan
+  router.post("/generate",     [authenticate],               ctrl.generate);
+  // List / filter / include
+  router.get("/",              [authenticate],               ctrl.findAll);
+  // Single item
+  router.get("/:id",           [authenticate],               ctrl.findOne);
+  // Student completes (multipart w/ file)
+  router.put("/:id/complete",  [authenticate, upload.single("file")], ctrl.complete);
+  // Admin approves/denies or any update
+  router.put("/:id",           [authenticate],               ctrl.update);
+  // Delete one
+  router.delete("/:id",        [authenticate],               ctrl.delete);
   // Delete all
-  router.delete("/", [authenticate], controller.deleteAll);
+  router.delete("/",           [authenticate],               ctrl.deleteAll);
 
-  // Mount at /flight-plan-t4/student_checklist_items
   app.use("/flight-plan-t4/student_flight_plan_items", router);
 };

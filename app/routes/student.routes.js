@@ -3,6 +3,8 @@ module.exports = (app) => {
   const { authenticate } = require("../authorization/authorization.js");
   var router = require("express").Router();
 
+  router.get("/user", [authenticate], students.findByUser);
+
   // Create a new Student
   router.post("/", [authenticate], students.create);
 

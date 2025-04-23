@@ -1,101 +1,104 @@
-const db = require("../models");
-const Student_Flight_Plan_Item = db.student_flight_plan_item;
-const Op = db.Sequelize.Op;
+// -------- controllers/student_flight_plan_item.controller.js --------
+const db        = require("../models");
+const SFP       = db.student_flight_plan_item;
+const FPI       = db.flight_plan_item;
+const Checklist = db.checklist_item;
 
-// Create and Save a new Student_Flight_Plan_Item
-exports.create = (req, res) => {
-  // Build object
-  const new_item = {
-    student_id: req.body.student_id,
-    checklist_item_id: req.body.checklist_item_id,
-    state: req.body.state || "Pending",
-  };
+// 1) Generate a plan by copying every Flight_Plan_Item into the student table (denormalised snapshot)
+exports.generate = async (req, res) => {
+  const { student_id } = req.body;
+  if (!student_id) return res.status(400).send({ message: "Missing student_id" });
 
-  Student_Checklist_Item.create(new_item)
-    .then((data) => res.send(data))
-    .catch((err) =>
-      res.status(500).send({ message: err.message || "Error creating record" })
-    );
+  // prevent duplicates
+  const exist = await SFP.count({ where: { student_id } });
+  if (exist) return res.status(400).send({ message: "Plan already generated" });
+
+  // pull each flight‑plan item with its checklist so we can copy details
+  const planItems = await FPI.findAll({ include: [{ model: Checklist, as: "checklist" }] });
+
+  const rows = planItems.map(pi => ({
+    student_id,
+    flight_plan_item_id: pi.id,
+    checklist_item_id:   pi.checklist_item_id,
+
+    // snapshot
+    name:         pi.checklist.name,
+    description:  pi.checklist.description,
+    points:       pi.checklist.points,
+    item_type:    pi.checklist.item_type,
+
+    semester_number: pi.semester_number,
+    state:           "Not Started"
+  }));
+
+  const created = await SFP.bulkCreate(rows, { returning: true });
+  return res.status(201).send(created);
 };
 
-// Retrieve all Student_Flight_Plan_Item (optionally filtered by student_id)
-exports.findAll = (req, res) => {
-  const student_id = req.query.student_id;
-  const condition = student_id
-    ? { student_id: { [Op.eq]: student_id } }
-    : null;
+// 2) Fetch (with optional filters & joins)
+exports.findAll = async (req, res) => {
+  const { student_id, state, pendingApproval, includeChecklist, includeStudent } = req.query;
+  const where = {};
+  if (student_id)    where.student_id    = student_id;
+  if (state)         where.state         = state;
+  if (pendingApproval === "true") {
+    where.state          = "Completed";
+    where.admin_approval = null;
+  }
 
-    Student_Flight_Plan_Item.findAll({ where: condition })
-    .then((data) => res.send(data))
-    .catch((err) =>
-      res.status(500).send({ message: err.message || "Error retrieving records" })
-    );
+  const include = [];
+  if (includeChecklist === "true") include.push({ model: Checklist, as: "checklist" });
+  if (includeStudent   === "true") include.push({ model: db.student, as: "student" });
+
+  const items = await SFP.findAll({ where, include, order: [["semester_number", "ASC"]] });
+  return res.send(items);
 };
 
-// Retrieve a single Student_Checklist_Item by PK
+// 3) Single record by PK
 exports.findOne = (req, res) => {
   const id = req.params.id;
-
-  Student_Flight_Plan_Item.findByPk(id)
-    .then((data) => {
-      if (data) {
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `No record found with id=${id}.`,
-        });
-      }
-    })
-    .catch((err) =>
-      res.status(500).send({ message: err.message || `Error retrieving id=${id}` })
-    );
+  SFP.findByPk(id)
+    .then(data => data
+      ? res.send(data)
+      : res.status(404).send({ message: `Not found id=${id}` })
+    )
+    .catch(err => res.status(500).send({ message: err.message }));
 };
 
-// Update a Student_Flight_Plan_Item by id
+// 4) Student “complete” action (with optional file upload)
+exports.complete = async (req, res) => {
+  const id = req.params.id;
+  const update = { state: "Completed" };
+  if (req.file) update.file_path = req.file.path;
+  await SFP.update(update, { where: { id } });
+  return res.send({ message: "Submitted for approval" });
+};
+
+// 5) Admin approve/deny or generic update
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Student_Flight_Plan_Item.update(req.body, { where: { id: id } })
-    .then((num) => {
-      if (num == 1) {
-        res.send({ message: "Record updated successfully." });
-      } else {
-        res.send({
-          message: `Cannot update record with id=${id}. Maybe not found or no changes in body.`,
-        });
-      }
-    })
-    .catch((err) =>
-      res.status(500).send({ message: err.message || `Error updating id=${id}` })
-    );
+  SFP.update(req.body, { where: { id } })
+    .then(num => num === 1
+      ? res.send({ message: "Updated successfully" })
+      : res.send({ message: `No change or not found id=${id}` })
+    )
+    .catch(err => res.status(500).send({ message: err.message }));
 };
 
-// Delete a Student_Checklist_Item by id
+// 6) Delete one
 exports.delete = (req, res) => {
   const id = req.params.id;
-
-  Student_Flight_Plan_Item.destroy({ where: { id: id } })
-    .then((num) => {
-      if (num == 1) {
-        res.send({ message: "Record deleted successfully!" });
-      } else {
-        res.send({
-          message: `Cannot delete record with id=${id}. Maybe not found.`,
-        });
-      }
-    })
-    .catch((err) =>
-      res.status(500).send({ message: err.message || `Error deleting id=${id}` })
-    );
+  SFP.destroy({ where: { id } })
+    .then(num => num === 1
+      ? res.send({ message: "Deleted successfully" })
+      : res.send({ message: `Not found id=${id}` })
+    )
+    .catch(err => res.status(500).send({ message: err.message }));
 };
 
-// Delete all Student_Checklist_Items
+// 7) Delete all 
 exports.deleteAll = (req, res) => {
-  Student_Flight_Plan_Item.destroy({ where: {}, truncate: false })
-    .then((nums) =>
-      res.send({ message: `${nums} record(s) deleted successfully!` })
-    )
-    .catch((err) =>
-      res.status(500).send({ message: err.message || "Error deleting records" })
-    );
+  SFP.destroy({ where: {}, truncate: false })
+    .then(nums => res.send({ message: `${nums} record(s) deleted` }))
+    .catch(err => res.status(500).send({ message: err.message }));
 };
