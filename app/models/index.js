@@ -46,6 +46,7 @@ db.student_flight_plan_item = require("./student_flight_plan_item.model.js")(seq
 db.event = require("./event.model.js")(sequelize, Sequelize); 
 db.reward = require("./reward.model.js")(sequelize, Sequelize);
 db.student_reward = require("./student_rewards.model.js")(sequelize, Sequelize);
+db.student_badge = require("./student_badge.model.js")(sequelize, Sequelize);
 
 /*** Relationships ***/
 // User - Session
@@ -66,15 +67,24 @@ db.student.belongsTo(db.major, { foreignKey: "major_id" });
 
 // Student <-> Badge
 db.student.belongsToMany(db.badge, {
-  through: "student_badges",
-  foreignKey: { name: "student_id", onDelete: "CASCADE" },
-  otherKey: { name: "badge_id", onDelete: "CASCADE" },
+  through: db.student_badge,
+  foreignKey: "student_id"
 });
 db.badge.belongsToMany(db.student, {
-  through: "student_badges",
-  foreignKey: { name: "badge_id", onDelete: "CASCADE" },
-  otherKey: { name: "student_id", onDelete: "CASCADE" },
+  through: db.student_badge,
+  foreignKey: "badge_id"
 });
+
+// db.student.belongsToMany(db.badge, {
+//   through: "student_badges",
+//   foreignKey: { name: "student_id", onDelete: "CASCADE" },
+//   otherKey: { name: "badge_id", onDelete: "CASCADE" },
+// });
+// db.badge.belongsToMany(db.student, {
+//   through: "student_badges",
+//   foreignKey: { name: "badge_id", onDelete: "CASCADE" },
+//   otherKey: { name: "student_id", onDelete: "CASCADE" },
+// });
 
 // Student <-> Clifton_Strength
 db.student.belongsToMany(db.clifton_strength, {

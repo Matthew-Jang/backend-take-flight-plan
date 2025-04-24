@@ -3,6 +3,7 @@ const db        = require("../models");
 const SFP       = db.student_flight_plan_item;
 const FPI       = db.flight_plan_item;
 const Checklist = db.checklist_item;
+const Op = db.Sequelize.Op;
 
 // 1) Generate a plan by copying every Flight_Plan_Item into the student table (denormalised snapshot)
 exports.generate = async (req, res) => {
@@ -67,6 +68,72 @@ exports.complete = async (req, res) => {
   const update = { state: "Completed" };
   if (req.file) update.file_path = req.file.path;
   await SFP.update(update, { where: { id } });
+
+ // 2) reload to get student_id & semester_number
+ const item      = await SFP.findByPk(id);
+ const studentId = item.student_id;
+ const sem       = item.semester_number;
+
+ // helper to award a badge without duplicating
+ const award = async (badge_id) => {
+   await db.student_badge.findOrCreate({
+     where: { student_id: studentId, badge_id }
+   });
+ };
+
+ // 3) count total completed tasks for this student
+ const totalCompleted = await SFP.count({
+   where: { student_id: studentId, state: "Completed" }
+ });
+
+ // 4) milestone badges by total completed
+ if (totalCompleted === 1) await award(3); // First Flight
+ if (totalCompleted === 3) await award(4); // Flight Crew
+
+ // 5) Full Wingspan (single semester)
+ const totalThisSem     = await SFP.count({ where: { student_id: studentId, semester_number: sem } });
+ const completedThisSem = await SFP.count({
+   where: {
+     student_id:      studentId,
+     semester_number: sem,
+     state:           "Completed"
+   }
+ });
+ if (completedThisSem === totalThisSem) {
+   await award(5); // Full Wingspan
+ }
+
+ // 6) Full Wingspan tiers I–IV (paired semesters per year)
+ // Map each semester to its year‐badge
+ const yearBadgeMap = {
+   1: 6, 2: 6,   // Semesters 1 & 2 → badge 6
+   3: 7, 4: 7,   // Semesters 3 & 4 → badge 7
+   5: 8, 6: 8,   // Semesters 5 & 6 → badge 8
+   7: 9, 8: 9    // Semesters 7 & 8 → badge 9
+ };
+ const badgeId = yearBadgeMap[sem];
+ if (badgeId) {
+   // figure out the two semesters for this badge
+   const semPairs = {
+     6: [1,2],
+     7: [3,4],
+     8: [5,6],
+     9: [7,8]
+   }[badgeId];
+
+   const totalYear     = await SFP.count({ where: { student_id: studentId, semester_number: { [Op.in]: semPairs } } });
+   const completedYear = await SFP.count({
+     where: {
+       student_id:      studentId,
+       semester_number: { [Op.in]: semPairs },
+       state:           "Completed"
+     }
+   });
+   if (completedYear === totalYear) {
+     await award(badgeId);
+   }
+ }
+
   return res.send({ message: "Submitted for approval" });
 };
 

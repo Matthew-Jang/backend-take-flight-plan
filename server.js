@@ -47,6 +47,8 @@ require("./app/routes/student_flight_plan_item.routes")(app);
 require("./app/routes/event.routes")(app);
 require("./app/routes/reward.routes")(app); 
 
+require("./app/routes/student_badges.routes")(app);
+
 // set port, listen for requests
 const PORT = process.env.PORT || 3100;
 if (process.env.NODE_ENV !== "test") {
