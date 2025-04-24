@@ -1,6 +1,6 @@
 module.exports = (app) => {
   const eventController = require("../controllers/event.controller");
-  const { authenticate } = require("../authorization/authorization.js");
+  const { authenticate, requireAdmin } = require("../authorization/authorization.js");
   const router = require("express").Router();
 
   // — Student signup endpoints —
@@ -11,7 +11,7 @@ module.exports = (app) => {
     eventController.getMySignups
   );
   router.delete("/:id/signup/:userId", authenticate, eventController.unSignupForEventAdmin);
-  
+
   // Sign up for an event
   router.post(
     "/:id/signup",
@@ -29,16 +29,16 @@ module.exports = (app) => {
   // List all signups for a given event
   router.get(
     "/:id/signups",
-    [authenticate],
+    [authenticate, requireAdmin],
     eventController.getEventSignups
   );
 
   // — Event CRUD —
-  router.post("/",           [authenticate], eventController.createEvent);
+  router.post("/",           [authenticate, requireAdmin], eventController.createEvent);
   router.get("/",            [authenticate], eventController.getAllEvents);
   router.get("/:id",         [authenticate], eventController.getEventById);
-  router.put("/:id",         [authenticate], eventController.updateEvent);
-  router.delete("/:id",      [authenticate], eventController.deleteEvent);
+  router.put("/:id",         [authenticate, requireAdmin], eventController.updateEvent);
+  router.delete("/:id",      [authenticate, requireAdmin], eventController.deleteEvent);
 
   app.use("/flight-plan-t4/events", router);
 };
