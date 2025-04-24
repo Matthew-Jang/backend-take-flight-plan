@@ -1,28 +1,33 @@
+// routes/user.routes.js
+
 module.exports = (app) => {
   const user = require("../controllers/user.controller.js");
-  const { authenticate } = require("../authorization/authorization.js");
-  var router = require("express").Router();
+  const { authenticate, requireAdmin } = require("../authorization/authorization.js");
+  const router = require("express").Router();
+
+  // Get the current authenticated user's info
+  router.get("/me", authenticate, user.getCurrentUser);
 
   // Create a new User
-  router.post("/", [authenticate], user.create);
+  router.post("/", authenticate, user.create);
 
-  // Retrieve all People
-  router.get("/", [authenticate], user.findAll);
+  // Retrieve all Users
+  router.get("/", authenticate, user.findAll);
 
-  // Retrieve a single User with id
-  router.get("/:id", [authenticate], user.findOne);
+  // Retrieve a single User by id
+  router.get("/:id", authenticate, user.findOne);
 
-  // Update a User with id
-  router.put("/:id", [authenticate], user.update);
+  // Update a User by id (admin only)
+  router.put("/:id", [authenticate, requireAdmin], user.update);
 
-  // Delete a User with id
-  router.delete("/:id", [authenticate], user.delete);
+  // Delete a User by id (admin only)
+  router.delete("/:id", [authenticate, requireAdmin], user.delete);
 
-  // Delete all User
-  router.delete("/", [authenticate], user.deleteAll);
+  // Delete all Users (admin only)
+  router.delete("/", [authenticate, requireAdmin], user.deleteAll);
 
-  // Update user points
-  router.patch("/:id/points", user.modifyPoints);
+  // Modify a Student's points (admin only)
+  router.patch("/:id/points", [authenticate, requireAdmin], user.modifyPoints);
 
   app.use("/flight-plan-t4/users", router);
 };

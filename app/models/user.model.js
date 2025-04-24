@@ -1,33 +1,47 @@
-module.exports = (sequelize, Sequelize) => {
-    const User = sequelize.define("user", {
+// models/user.model.js
+
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define(
+    "user",
+    {
       id: {
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
       fName: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       lName: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       email: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
+      // Role: 0 = student (default), 1 = admin, 2 = staff
+      role: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 0,
+        comment: "0=student,1=admin,2=staff",
+      },
       // refresh_token: {
-      //   type: Sequelize.STRING(512),
-      //   allowNull: true
+      //   type: DataTypes.STRING(512),
+      //   allowNull: true,
       // },
       // expiration_date: {
-      //   type: Sequelize.DATE,
-      //   allowNull: true
+      //   type: DataTypes.DATE,
+      //   allowNull: true,
       // },
-    }, {
-      timestamps: false
-  });
-  
-    return User;
-  };
+    },
+    {
+      tableName: "users",
+      timestamps: false,
+    }
+  );
+
+  return User;
+};

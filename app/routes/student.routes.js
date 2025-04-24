@@ -1,6 +1,6 @@
 module.exports = (app) => {
   const students = require("../controllers/student.controller.js");
-  const { authenticate } = require("../authorization/authorization.js");
+  const { authenticate, requireAdmin } = require("../authorization/authorization.js");
   var router = require("express").Router();
 
   router.get("/user", [authenticate], students.findByUser);
@@ -18,10 +18,10 @@ module.exports = (app) => {
   router.put("/:id", [authenticate], students.update);
 
   // Delete a Student by id
-  router.delete("/:id", [authenticate], students.delete);
+  router.delete("/:id", [authenticate, requireAdmin], students.delete);
 
   // Delete all Students
-  router.delete("/", [authenticate], students.deleteAll);
+  router.delete("/", [authenticate, requireAdmin], students.deleteAll);
 
   app.use("/flight-plan-t4/students", router);
 };
