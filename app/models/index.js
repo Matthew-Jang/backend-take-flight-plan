@@ -46,7 +46,11 @@ db.student_flight_plan_item = require("./student_flight_plan_item.model.js")(seq
 db.event = require("./event.model.js")(sequelize, Sequelize); 
 db.reward = require("./reward.model.js")(sequelize, Sequelize);
 db.student_reward = require("./student_rewards.model.js")(sequelize, Sequelize);
+
 db.student_badge = require("./student_badge.model.js")(sequelize, Sequelize);
+
+db.event_signup = require("./event_signup.model.js")(sequelize, Sequelize);
+
 
 /*** Relationships ***/
 // User - Session
@@ -111,16 +115,17 @@ db.reward.belongsToMany(db.student, {
 });
 
 // Student <-> Event
-db.student.belongsToMany(db.event, {
-  through: "student_events",
-  foreignKey: { name: "student_id", onDelete: "CASCADE" },
-  otherKey: { name: "event_id", onDelete: "CASCADE" },
-});
-db.event.belongsToMany(db.student, {
-  through: "student_events",
-  foreignKey: { name: "event_id", onDelete: "CASCADE" },
-  otherKey: { name: "student_id", onDelete: "CASCADE" },
-});
+db.student.belongsToMany(db.event, { through: "student_events", foreignKey: "student_id", otherKey: "event_id" });
+db.event.belongsToMany(db.student, { through: "student_events", foreignKey: "event_id",   otherKey: "student_id" });
+
+db.event.hasMany(db.event_signup,   { foreignKey: "event_id", onDelete: "CASCADE" });
+db.event_signup.belongsTo(db.event, { foreignKey: "event_id" });
+
+
+// Event signup: 1 user signs up for many events, and vice versa
+db.user.hasMany(db.event_signup, { foreignKey: "user_id", onDelete: "CASCADE" });
+db.event_signup.belongsTo(db.user, { foreignKey: "user_id" });
+
 
 // checklist_item ↔ flight_plan_item (1:N)
 db.checklist_item.hasMany(db.flight_plan_item, { foreignKey: { name: "checklist_item_id", allowNull: false, onDelete: "CASCADE" } });

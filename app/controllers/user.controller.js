@@ -1,6 +1,27 @@
-const db = require("../models");
-const User = db.user;
-const Op = db.Sequelize.Op;
+const db      = require("../models");
+const User    = db.user;
+const Student = db.student;
+const Op      = db.Sequelize.Op;
+
+function flattenUser(u) {
+  const base = {
+    id:    u.id,
+    fName: u.fName,
+    lName: u.lName,
+    email: u.email,
+  };
+
+  // If the join came back, use its values; otherwise default to zero
+  if (u.student) {
+    base.points_awarded = u.student.points_awarded;
+    base.points_used    = u.student.points_used;
+  } else {
+    base.points_awarded = 0;
+    base.points_used    = 0;
+  }
+
+  return base;
+}
 
 // Create and Save a new User
 exports.create = (req, res) => {
@@ -35,66 +56,60 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all People from the database.
-exports.findAll = (req, res) => {
+exports.findAll = async (req, res) => {
   const id = req.query.id;
-  var condition = id ? { id: { [Op.like]: `%${id}%` } } : null;
+  const condition = id ? { id: { [Op.like]: `%${id}%` } } : null;
 
-  User.findAll({ where: condition })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving people.",
-      });
+  try {
+    const users = await User.findAll({
+      where: condition,
+      attributes: ["id","fName","lName","email"],
+      include: [{
+        model: Student,
+        attributes: ["points_awarded","points_used"]
+      }]
     });
+
+    // Flatten and send
+    res.json(users.map(flattenUser));
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };
 
 // Find a single User with an id
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
   const id = req.params.id;
-
-  User.findByPk(id)
-    .then((data) => {
-      if (data) {
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `Cannot find User with id=${id}.`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error retrieving User with id=" + id,
-      });
+  try {
+    const user = await User.findByPk(id, {
+      attributes: ["id","fName","lName","email"],
+      include: [{ model: Student, attributes: ["points_awarded","points_used"] }]
     });
+    if (!user) {
+      return res.status(404).send({ message: `User ${id} not found` });
+    }
+    res.json(flattenUser(user));
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };
 
 // Find a single User with an email
-exports.findByEmail = (req, res) => {
+exports.findByEmail = async (req, res) => {
   const email = req.params.email;
-
-  User.findOne({
-    where: {
-      email: email,
-    },
-  })
-    .then((data) => {
-      if (data) {
-        res.send(data);
-      } else {
-        res.send({ email: "not found" });
-        /*res.status(404).send({
-          message: `Cannot find User with email=${email}.`
-        });*/
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error retrieving User with email=" + email,
-      });
+  try {
+    const user = await User.findOne({
+      where: { email },
+      attributes: ["id","fName","lName","email"],
+      include: [{ model: Student, attributes: ["points_awarded","points_used"] }]
     });
+    if (!user) {
+      return res.status(404).send({ message: `User ${email} not found` });
+    }
+    res.json(flattenUser(user));
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };
 
 // Update a User by the id in the request
