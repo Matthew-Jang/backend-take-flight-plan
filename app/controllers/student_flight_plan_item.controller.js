@@ -37,14 +37,10 @@ exports.generate = async (req, res) => {
 
 // 2) Fetch (with optional filters & joins)
 exports.findAll = async (req, res) => {
-  const { student_id, state, pendingApproval, includeChecklist, includeStudent } = req.query;
+  const { student_id, state, includeChecklist, includeStudent } = req.query;
   const where = {};
   if (student_id)    where.student_id    = student_id;
   if (state)         where.state         = state;
-  if (pendingApproval === "true") {
-    where.state          = "Completed";
-    where.admin_approval = null;
-  }
 
   const include = [];
   if (includeChecklist === "true") include.push({ model: Checklist, as: "checklist" });
