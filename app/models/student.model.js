@@ -1,5 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
-    const Student = sequelize.define("student", {
+  const Student = sequelize.define(
+    "student",
+    {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -21,9 +23,18 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
-    }, {
-      timestamps: false
-  });
-    return Student;
-  };
-  
+      // Compute current balance as awarded minus used
+      points: {
+        type: Sequelize.VIRTUAL,
+        get() {
+          return this.getDataValue("points_awarded") - this.getDataValue("points_used");
+        },
+      },
+    },
+    {
+      timestamps: false,
+    }
+  );
+
+  return Student;
+};
