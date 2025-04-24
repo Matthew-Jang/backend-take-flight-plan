@@ -32,7 +32,9 @@ exports.generate = async (req, res) => {
     state:           "Not Started"
   }));
 
-  const created = await SFP.bulkCreate(rows, { returning: true });
+  const created = await SFP.bulkCreate(rows, {
+    ignoreDuplicates: true    // skips any row that would violate the new unique index
+  });
   return res.status(201).send(created);
 };
 

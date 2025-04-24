@@ -20,7 +20,13 @@ module.exports = (sequelize, Sequelize) => {
   }, {
     tableName: "student_flight_plan_item",
     freezeTableName: true,
-    timestamps: false
+    timestamps: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ["student_id", "flight_plan_item_id"]
+      },
+      ],
   });
   return StudentFlightPlanItem;
 };
